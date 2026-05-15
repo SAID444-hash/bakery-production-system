@@ -10,6 +10,6 @@
 
 </template>
 
-<style scooped>
+<style scoped>
 
 </style>

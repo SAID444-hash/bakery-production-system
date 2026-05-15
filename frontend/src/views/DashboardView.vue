@@ -8,8 +8,8 @@
     <p>This is the dashboard page of Bakery production system. Here you can find an overview of our production and sales data.</p>
   </main>
 
-</template>
 
-<style scooped>
 
-</style>
+  <style scoped>
+
+    </style>
