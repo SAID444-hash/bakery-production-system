@@ -1,9 +1,9 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
 </script>
 
 <template>
   <main>
-    <TheWelcome />
+    <h1>Welcome to Bakery Production System</h1>
+    <p>This is the home page of Bakery production system. Here you can find information about our products and services.</p>
   </main>
 </template>
