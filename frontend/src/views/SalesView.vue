@@ -1,3 +1,4 @@
+<!-- src/views/SalesView.vue -->
 <script setup>
 </script>
 
