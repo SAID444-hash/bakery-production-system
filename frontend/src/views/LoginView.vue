@@ -1,4 +1,5 @@
-<template>
+ <!-- src/views/LoginView.vue -->
+ <template>
   <div class="login-page">
     <h2>Login</h2>
     <form @submit.prevent="handleLogin">

@@ -1,3 +1,4 @@
+<!-- src/views/HomeView.vue -->
 <script setup>
 </script>
 
@@ -7,3 +8,7 @@
     <p>This is the home page of Bakery production system. Here you can find information about our products and services.</p>
   </main>
 </template>
+
+<style scoped>
+
+</style>

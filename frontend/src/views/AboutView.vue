@@ -1,3 +1,5 @@
+<!-- src/views/AboutView.vue -->
+
 <script setup>
 </script>
 
