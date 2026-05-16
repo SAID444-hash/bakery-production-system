@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+=======
+ <!-- src/views/LoginView.vue -->
+ <template>
+  <div class="login-page">
+    <h2>Login</h2>
+    <form @submit.prevent="handleLogin">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          v-model="username"
+          required
+        />
+      </div>
+>>>>>>> 13bfd35 (include all changes i have made)
 
 
 const router = useRouter()

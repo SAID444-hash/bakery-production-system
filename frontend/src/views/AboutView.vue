@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+<!-- src/views/AboutView.vue -->
+
+<script setup>
+</script>
+
+>>>>>>> 13bfd35 (include all changes i have made)
 <template>
   <div class="about">
     <h1>This is an about page</h1>

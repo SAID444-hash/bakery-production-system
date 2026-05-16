@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <script setup>
 import { ref, computed } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
@@ -27,6 +28,10 @@ function handleSale(product) {
 function handleViewRecipe(productId) {
   alert(`View recipe for product #${productId}`)
 }
+=======
+<!-- src/views/ProductsView.vue -->
+<script setup>
+>>>>>>> 13bfd35 (include all changes i have made)
 </script>
 
 <template>
@@ -87,4 +92,16 @@ function handleViewRecipe(productId) {
       No products match your search. Try a different term or category.
     </div>
   </div>
+<<<<<<< HEAD
 </template>
+=======
+</template>
+
+
+
+<style scoped>
+
+</style>
+
+
+>>>>>>> 13bfd35 (include all changes i have made)
