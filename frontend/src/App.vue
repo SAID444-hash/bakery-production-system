@@ -1,68 +1,26 @@
-<template>
-  <div class="app">
-    <!-- Navigation bar -->
-    <nav class="navbar">
-      <div class="brand">Bakery Production System</div>
-      <div class="nav-links">
-        <router-link to="/dashboard">Dashboard</router-link>
-        <router-link to="/products">Products</router-link>
-        <router-link to="/sales">Sales</router-link>
-        <router-link to="/login">Login</router-link>
-      </div>
-    </nav>
+<script setup>
+import { ref } from 'vue'
 
-    <!-- Dynamic page content -->
-    <main class="content">
-      <router-view />
-    </main>
-  </div>
-</template>
-
-<script>
-export default {
-  name: "App",
-};
+const products =  ref([
+  { id: 1, name: 'Bread', prices: 60, category: 'Bakery', shelf_life: 24 },
+  { id: 2, name: 'Cake', prices: 150, category: 'Bakery', shelf_life: 48 },
+  { id: 3, name: 'Pastry', prices: 100, category: 'Bakery', shelf_life: 36 },
+  { id: 4, name: 'Muffin', prices: 80, category: 'Bakery', shelf_life: 24 }
+])
 </script>
 
+<template>
+<h1>Bakery Production System</h1>
+
+<div v-for="product in products" :key="product.id">
+  <h2>{{ product.name }}</h2>
+  <p>Price: {{ product.prices }}</p>
+  <p>Category: {{ product.category }}</p>
+  <p>Shelf Life: {{ product.shelf_life }} hours</p>
+
+</div>
+</template>
+
 <style scoped>
-.app {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #8b4513; /* chocolate brown */
-  color: white;
-  padding: 1rem;
-}
-
-.brand {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.nav-links {
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-links a {
-  color: white;
-  text-decoration: none;
-}
-
-.nav-links a:hover {
-  text-decoration: underline;
-}
-
-.content {
-  flex: 1;
-  padding: 2rem;
-  background: #fdf5e6; /* light bakery-style background */
-}
 </style>
