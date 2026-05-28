@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { computed, ref } from 'vue'
 import StockIndicator from '../components/StockIndicator.vue'
 
 const ingredients = ref([
@@ -54,6 +55,7 @@ const sortedIngredients = computed(() =>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <StockIndicator
+        v-for="ing in sortedIngredients"
         v-for="ing in sortedIngredients"
         :key="ing.id"
         :name="ing.name"
