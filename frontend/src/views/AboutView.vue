@@ -5,7 +5,7 @@
 
 <template>
   <main>
-    <h1>About</h1>
+    <h1>About Edited</h1>
     <p>
       This is the about page of Bakery production system.
       Here you can find information about our company and team.
