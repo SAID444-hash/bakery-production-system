@@ -36,7 +36,85 @@ const batches = ref([
     started_at: '2026-05-30 07:00',
     completed_at: null
   },
+  {
+    id: 3,
+    product_name: 'Chocolate Cake',
+    product_id: 2,
+    planned_quantity: 20,
+    actual_quantity: 18,
+    wastage_quantity: 2,
+    status: 'done',
+    started_at: '2026-05-31 06:30',
+    completed_at: '2026-05-31 09:00'
+  },
+  {
+    id: 4,
+    product_name: 'Cinnamon Roll',
+    product_id: 3,
+    planned_quantity: 30,
+    actual_quantity: null,
+    wastage_quantity: 0,
+    status: 'planned',
+    started_at: null,
+    completed_at: null
+  },
+  {
+    id: 5,
+    product_name: 'White Bread',
+    product_id: 1,
+    planned_quantity: 50,
+    actual_quantity: 35,
+    wastage_quantity: 15,
+    status: 'done',
+    started_at: '2026-05-28 05:00',
+    completed_at: '2026-05-28 07:00'
+  },
+  {
+    id: 6,
+    product_name: 'Meat Pie',
+    product_id: 4,
+    planned_quantity: 40,
+    actual_quantity: null,
+    wastage_quantity: 0,
+    status: 'baking',
+    started_at: '2026-06-01 10:00',
+    completed_at: null
+  },
 ])
+
+// UI state for completion panel
+const showCompletionPanel = ref(false)
+const completionActual = ref(0)
+const completionWastage = ref(0)
+const selectedBatchId = ref(null)
+
+function openCompletionPanel(batchId) {
+  const b = batches.value.find(x => x.id === batchId)
+  if (!b) return
+  selectedBatchId.value = batchId
+  completionActual.value = b.planned_quantity || 0
+  completionWastage.value = b.wastage_quantity || 0
+  showCompletionPanel.value = true
+}
+
+function confirmCompletion() {
+  const b = batches.value.find(x => x.id === selectedBatchId.value)
+  if (!b) return
+  b.actual_quantity = Number(completionActual.value)
+  b.wastage_quantity = Number(completionWastage.value)
+  b.status = 'done'
+  const now = new Date()
+  const pad = n => String(n).padStart(2, '0')
+  b.completed_at = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
+  showCompletionPanel.value = false
+  selectedBatchId.value = null
+}
+
+function markFailed(batchId) {
+  const b = batches.value.find(x => x.id === batchId)
+  if (!b) return
+  b.status = 'failed'
+}
 
 const totalValue = computed(() =>
   ingredients.value.reduce((sum, i) => sum + i.current_stock * i.cost_per_unit, 0)
@@ -46,6 +124,13 @@ const needsReorder = computed(() =>
 )
 const wellStocked = computed(() =>
   ingredients.value.filter(i => i.current_stock >= i.reorder_level).length
+)
+
+const inProgressCount = computed(() =>
+  batches.value.filter(b => ['mixing', 'baking', 'cooling'].includes(b.status)).length
+)
+const lowYieldCount = computed(() =>
+  batches.value.filter(b => b.actual_quantity !== null && b.planned_quantity > 0 && (b.actual_quantity / b.planned_quantity) < 0.8).length
 )
 
 function advanceBatch(batchId, newStatus) {
@@ -73,7 +158,7 @@ function advanceBatch(batchId, newStatus) {
     </div>
 
     <!-- Summary stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
       <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Inventory Value</p>
         <p class="text-2xl font-bold text-[#1A1A2E] mt-1">KES {{ totalValue.toLocaleString() }}</p>
@@ -91,9 +176,17 @@ function advanceBatch(batchId, newStatus) {
           {{ needsReorder }}
         </p>
       </div>
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 col-span-2 sm:col-span-1">
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
         <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Well Stocked</p>
         <p class="text-2xl font-bold text-emerald-600 mt-1">{{ wellStocked }}</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">In Progress</p>
+        <p class="text-2xl font-bold text-[#1A1A2E] mt-1">{{ inProgressCount }}</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400">Low Yield (&lt;80%)</p>
+        <p class="text-2xl font-bold text-red-600 mt-1">{{ lowYieldCount }}</p>
       </div>
     </div>
 
@@ -119,7 +212,28 @@ function advanceBatch(batchId, newStatus) {
         :key="batch.id"
         :batch="batch"
         @advance-batch="advanceBatch"
+        @request-complete="openCompletionPanel"
+        @mark-failed="markFailed"
       />
+    </div>
+
+    <!-- Completion panel for cooling batches -->
+    <div v-if="showCompletionPanel" class="mt-6 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+      <h3 class="font-semibold text-[#1A1A2E] mb-3">Complete Batch</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm text-gray-500">Actual quantity</label>
+          <input type="number" v-model.number="completionActual" class="mt-1 w-full rounded-md border p-2" />
+        </div>
+        <div>
+          <label class="text-sm text-gray-500">Wastage quantity</label>
+          <input type="number" v-model.number="completionWastage" class="mt-1 w-full rounded-md border p-2" />
+        </div>
+      </div>
+      <div class="mt-4 flex gap-2">
+        <button @click="confirmCompletion" class="px-4 py-2 bg-emerald-600 text-white rounded-md">Confirm</button>
+        <button @click="showCompletionPanel = false" class="px-4 py-2 bg-gray-100 rounded-md">Cancel</button>
+      </div>
     </div>
   </div>
 </template>
