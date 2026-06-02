@@ -1,17 +1,15 @@
-<!-- src/views/AboutView.vue -->
-
-<script setup>
-</script>
-
 <template>
-  <main>
-    <h1>About Edited</h1>
-    <p>
-      This is the about page of Bakery production system.
-      Here you can find information about our company and team.
-    </p>
-  </main>
+  <div class="about">
+    <h1>This is an about page</h1>
+  </div>
 </template>
 
-<style scoped>
+<style>
+@media (min-width: 1024px) {
+  .about {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+  }
+}
 </style>
