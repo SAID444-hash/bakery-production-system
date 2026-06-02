@@ -41,6 +41,11 @@ const revenueBreakdown = computed(() => {
   }
 })
 
+const historyTitle = computed(() => selectedProduct.value ? `Sales history for ${selectedProduct.value.name}` : 'All sales history')
+const historyDescription = computed(() => selectedProduct.value
+  ? `Showing the latest sales records for ${selectedProduct.value.name}.`
+  : 'Showing the latest sales records across all products.')
+
 const displayedSales = computed(() => {
   if (!selectedProduct.value) return salesHistory.value.slice().reverse()
   return salesHistory.value.filter(s => s.productId === selectedProduct.value.id).slice().reverse()
@@ -219,8 +224,8 @@ function submitSale() {
               </div>
             </div>
             <div class="rounded-3xl border border-gray-200 bg-slate-50 p-5">
-              <h3 class="text-base font-semibold text-[#1A1A2E]">Recent sales history</h3>
-              <p class="text-sm text-gray-500 mt-2">Showing the latest transactions for all products.</p>
+              <h3 class="text-base font-semibold text-[#1A1A2E]">{{ historyTitle }}</h3>
+              <p class="text-sm text-gray-500 mt-2">{{ historyDescription }}</p>
             </div>
           </div>
 

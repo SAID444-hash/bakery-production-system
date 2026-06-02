@@ -28,9 +28,9 @@ const stockBadge = computed(() => {
     return { label: 'Out of stock', class: 'bg-red-50 text-red-700' }
   }
   if (stock <= 10) {
-    return { label: `${stock} left`, class: 'bg-amber-50 text-amber-700' }
+    return { label: `Available stock: ${stock}`, class: 'bg-amber-50 text-amber-700' }
   }
-  return { label: `Stock ${stock}`, class: 'bg-emerald-50 text-emerald-700' }
+  return { label: `Available stock: ${stock}`, class: 'bg-emerald-50 text-emerald-700' }
 })
 
 // Category badge colors using Tailwind classes
