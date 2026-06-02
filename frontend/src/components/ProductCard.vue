@@ -22,6 +22,17 @@ const formattedPrice = computed(() => {
   return props.product.selling_price.toLocaleString()
 })
 
+const stockBadge = computed(() => {
+  const stock = props.product.available_stock ?? 0
+  if (stock <= 0) {
+    return { label: 'Out of stock', class: 'bg-red-50 text-red-700' }
+  }
+  if (stock <= 10) {
+    return { label: `${stock} left`, class: 'bg-amber-50 text-amber-700' }
+  }
+  return { label: `Stock ${stock}`, class: 'bg-emerald-50 text-emerald-700' }
+})
+
 // Category badge colors using Tailwind classes
 const categoryClass = computed(() => {
   const colors = {
@@ -50,8 +61,17 @@ function handleViewRecipe() {
     :class="{ 'opacity-60 border-gray-400': !product.is_active }"
   >
     <!-- Header: name + category -->
-    <div class="flex justify-between items-start">
-      <h3 class="text-lg font-semibold text-[#1A1A2E]">{{ product.name }}</h3>
+    <div class="flex justify-between items-start gap-3">
+      <div>
+        <h3 class="text-lg font-semibold text-[#1A1A2E]">{{ product.name }}</h3>
+        <span
+          class="inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em]"
+          :class="stockBadge.class"
+        >
+          {{ stockBadge.label }}
+        </span>
+      </div>
+
       <span
         class="px-3 py-0.5 rounded-full text-xs font-medium capitalize whitespace-nowrap"
         :class="categoryClass"

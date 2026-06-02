@@ -3,9 +3,14 @@ import { ref, computed } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
 
 const products = ref([
-  { id: 1, name: 'White Bread', category: 'bread', selling_price: 60, shelf_life_hours: 24, unit: 'loaf', is_active: true },
-  { id: 2, name: 'Chocolate Cake', category: 'cake', selling_price: 350, shelf_life_hours: 72, unit: 'piece', is_active: true },
-  { id: 3, name: 'Mandazi', category: 'bun', selling_price: 10, shelf_life_hours: 12, unit: 'piece', is_active: true },
+  { id: 1, name: 'White Bread', category: 'bread', selling_price: 60, shelf_life_hours: 24, unit: 'loaf', available_stock: 45, is_active: true },
+  { id: 2, name: 'Chocolate Cake', category: 'cake', selling_price: 350, shelf_life_hours: 72, unit: 'piece', available_stock: 8, is_active: true },
+  { id: 3, name: 'Mandazi', category: 'bun', selling_price: 10, shelf_life_hours: 12, unit: 'piece', available_stock: 120, is_active: true },
+  { id: 4, name: 'Cinnamon Roll', category: 'pastry', selling_price: 80, shelf_life_hours: 18, unit: 'piece', available_stock: 15, is_active: true },
+  { id: 5, name: 'Meat Pie', category: 'pastry', selling_price: 120, shelf_life_hours: 20, unit: 'piece', available_stock: 20, is_active: true },
+  { id: 6, name: 'Samosa', category: 'bun', selling_price: 25, shelf_life_hours: 16, unit: 'piece', available_stock: 40, is_active: true },
+  { id: 7, name: 'Brownie', category: 'cake', selling_price: 90, shelf_life_hours: 72, unit: 'piece', available_stock: 5, is_active: true },
+  { id: 8, name: 'Muffin', category: 'pastry', selling_price: 110, shelf_life_hours: 36, unit: 'piece', available_stock: 10, is_active: true },
 ])
 
 const searchQuery = ref('')
