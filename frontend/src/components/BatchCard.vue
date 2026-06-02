@@ -29,7 +29,7 @@ const props = defineProps({
   // }
 })
 
-const emit = defineEmits(['advance-batch', 'request-complete', 'mark-failed'])
+const emit = defineEmits(['advance-batch'])
 // computaions for status label and colors
 // Cost per unit = total batch ingredient cost / actual quantity
 // (We can't calculate this yet — needs BATCH_COSTS data from API)
@@ -84,13 +84,15 @@ const statusStyle = computed(() => {
 })
 
 function handleAdvance() {
-  if (!nextStatus.value) return
-  // If moving to 'done' from cooling show completion panel instead
-  if (nextStatus.value.next === 'done') {
-    emit('request-complete', props.batch.id)
-    return
+  if (nextStatus.value) {
+    emit('advance-batch', props.batch.id, nextStatus.value.next)
   }
-  emit('advance-batch', props.batch.id, nextStatus.value.next)
+}
+
+// Mark a mixing/baking batch as failed — reuses the advance event with the
+// 'failed' status, which surfaces the red banner and hides the advance button.
+function handleFail() {
+  emit('advance-batch', props.batch.id, 'failed')
 }
 //data emission
 
@@ -157,22 +159,22 @@ function handleAdvance() {
     </div>
 
     <!-- Action button -->
-    <div class="mt-auto w-full">
-      <button
-        v-if="nextStatus && batch.status !== 'failed'"
-        @click="handleAdvance"
-        class="w-full py-2.5 px-4 bg-[#1A1A2E] text-white rounded-lg text-sm font-medium hover:bg-[#E8541E] transition-colors"
-      >
-        Click to  {{ nextStatus.icon }} {{ nextStatus.label }}
-      </button>
+    <button
+      v-if="nextStatus"
+      @click="handleAdvance"
+      class="mt-auto w-full py-2.5 px-4 bg-[#1A1A2E] text-white rounded-lg
+             text-sm font-medium hover:bg-[#E8541E] transition-colors"
+    >
+    Click to  {{ nextStatus.icon }} {{ nextStatus.label }}
+    </button>
 
-      <button
-        v-if="['mixing','baking'].includes(batch.status)"
-        @click.stop="emit('mark-failed', batch.id)"
-        class="mt-2 text-sm text-red-600 hover:underline"
-      >
-        ❌ Mark Failed
-      </button>
-    </div>
+    <!-- Mark failed (only while mixing or baking) -->
+    <button
+      v-if="batch.status === 'mixing' || batch.status === 'baking'"
+      @click="handleFail"
+      class="self-start text-xs font-medium text-red-500 hover:text-red-700 hover:underline transition-colors"
+    >
+      ❌ Mark Failed
+    </button>
   </div>
 </template>
