@@ -92,7 +92,7 @@ function recordSale() {
                  focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 mb-4"
         >
           <option :value="null" disabled>Choose a product</option>
-          <option v-for="p in productStore.products" :key="p.id" :value="p.id">
+          <option v-for="p in productStore.activeProducts" :key="p.id" :value="p.id">
             {{ p.name }} — KES {{ p.selling_price }}
           </option>
         </select>
@@ -100,7 +100,7 @@ function recordSale() {
            <!-- Product grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <ProductCard
-            v-for="product in productStore.products"
+            v-for="product in productStore.activeProducts"
             :key="product.id"
             :product="product"
             @sell-product="handleSale"
