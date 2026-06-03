@@ -5,10 +5,14 @@ const props = defineProps({
   product: {
     type: Object,
     required: true
+  },
+  showControls: {
+    type: Boolean,
+    default: false
   }
 })
 
-const emit = defineEmits(['sell-product', 'view-recipe'])
+const emit = defineEmits(['sell-product', 'view-recipe', 'delete-product', 'toggle-active'])
 
 const shelfLifeStatus = computed(() => {
   const hours = props.product.shelf_life_hours
@@ -39,6 +43,14 @@ function handleSell() {
 
 function handleViewRecipe() {
   emit('view-recipe', props.product.id)
+}
+
+function handleDelete() {
+  emit('delete-product', props.product.id)
+}
+
+function handleToggleActive() {
+  emit('toggle-active', props.product.id)
 }
 </script>
 
@@ -82,21 +94,37 @@ function handleViewRecipe() {
     </div>
 
     <!-- Actions -->
-    <div class="flex gap-2 mt-auto">
+    <div class="flex flex-wrap gap-2 mt-auto">
       <button
         @click="handleSell"
         :disabled="!product.is_active"
-        class="flex-1 py-2 px-4 bg-[#1A1A2E] text-white rounded-lg text-sm font-medium
+        class="flex-1 min-w-[120px] py-2 px-4 bg-[#1A1A2E] text-white rounded-lg text-sm font-medium
                hover:bg-[#E8541E] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
       >
         Sell
       </button>
       <button
         @click="handleViewRecipe"
-        class="flex-1 py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium
+        class="flex-1 min-w-[120px] py-2 px-4 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium
                hover:bg-gray-200 transition-colors"
       >
         View Recipe
+      </button>
+      <button
+        v-if="showControls"
+        @click="handleDelete"
+        class="flex-1 min-w-[120px] py-2 px-4 bg-red-100 text-red-700 rounded-lg text-sm font-medium
+               hover:bg-red-200 transition-colors"
+      >
+        Delete
+      </button>
+      <button
+        v-if="showControls"
+        @click="handleToggleActive"
+        class="flex-1 min-w-[120px] py-2 px-4 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium
+               hover:bg-slate-200 transition-colors"
+      >
+        {{ product.is_active ? 'Deactivate' : 'Activate' }}
       </button>
     </div>
   </div>
