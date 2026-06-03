@@ -33,6 +33,10 @@ const totalCashRevenue = computed(() => salesHistory.value.filter(s => s.payment
 const totalMpesaRevenue = computed(() => salesHistory.value.filter(s => s.paymentMethod === 'M-Pesa').reduce((a, b) => a + b.amount, 0))
 const totalRevenue = computed(() => totalCashRevenue.value + totalMpesaRevenue.value)
 
+const formattedTotalRevenue = computed(() => totalRevenue.value.toLocaleString())
+const formattedTotalCash = computed(() => totalCashRevenue.value.toLocaleString())
+const formattedTotalMpesa = computed(() => totalMpesaRevenue.value.toLocaleString())
+
 const revenueBreakdown = computed(() => {
   const total = totalRevenue.value || 1
   return {
@@ -67,8 +71,14 @@ function clearSelection() {
 }
 
 function validateMpesaReference(value) {
-  return /^[A-Z0-9]{6,12}$/.test(value.trim())
+  return /^[A-Z0-9]{6,12}$/.test(value.trim().toUpperCase())
 }
+
+const isMpesaValid = computed(() => {
+  if (selectedPaymentMethod.value !== 'M-Pesa') return true
+  if (!mpesaReference.value) return false
+  return validateMpesaReference(mpesaReference.value)
+})
 
 function submitSale() {
   formError.value = ''
@@ -77,10 +87,10 @@ function submitSale() {
   if (!selectedProduct.value) { formError.value = 'Select a product before recording a sale.'; return }
   if (saleQuantity.value < 1) { formError.value = 'Quantity must be at least 1.'; return }
   if (saleQuantity.value > selectedProduct.value.available_stock) { formError.value = 'Not enough stock available.'; return }
-  if (selectedPaymentMethod.value === 'M-Pesa' && !validateMpesaReference(mpesaReference.value)) { formError.value = 'M-Pesa reference must be 6-12 uppercase letters/digits.'; return }
+  if (selectedPaymentMethod.value === 'M-Pesa' && !validateMpesaReference(mpesaReference.value)) { formError.value = 'M-Pesa reference must be 6-12 letters/digits.'; return }
 
   const amount = selectedProduct.value.selling_price * saleQuantity.value
-  const reference = selectedPaymentMethod.value === 'M-Pesa' ? mpesaReference.value.trim() : 'N/A'
+  const reference = selectedPaymentMethod.value === 'M-Pesa' ? mpesaReference.value.trim().toUpperCase() : 'N/A'
 
   salesHistory.value.push({
     id: salesHistory.value.length + 1,
@@ -134,7 +144,7 @@ function submitSale() {
         <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
           <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
             <p class="text-sm text-gray-500">Total revenue</p>
-            <h2 class="mt-3 text-3xl font-semibold text-[#1A1A2E]">KES {{ totalRevenue }}</h2>
+            <h2 class="mt-3 text-3xl font-semibold text-[#1A1A2E]">KES {{ formattedTotalRevenue }}</h2>
             <p class="text-sm text-gray-500 mt-2">Cash and M-Pesa sales across the store.</p>
           </div>
 
@@ -204,24 +214,25 @@ function submitSale() {
                 <span class="text-sm font-medium text-slate-700">M-Pesa reference</span>
                 <input type="text" v-model="mpesaReference" placeholder="Enter transaction code" class="mt-2 w-full rounded-3xl border border-gray-300 bg-white px-4 py-3 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
               </label>
+              <p v-if="mpesaReference && !isMpesaValid" class="mt-2 text-xs text-red-600">M-Pesa reference must be 6-12 uppercase letters or digits.</p>
             </div>
 
             <div v-if="formError" class="mt-4 rounded-3xl bg-red-50 border border-red-200 p-4 text-sm text-red-700">{{ formError }}</div>
             <div v-if="successMessage" class="mt-4 rounded-3xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-700">{{ successMessage }}</div>
 
-            <button @click="submitSale" class="mt-6 inline-flex items-center justify-center rounded-3xl bg-[#1A1A2E] px-6 py-3 text-sm font-semibold text-white hover:bg-[#E8541E] transition">Record sale</button>
+            <button @click="submitSale" :disabled="!selectedProduct || (selectedPaymentMethod === 'M-Pesa' && !isMpesaValid)" class="mt-6 inline-flex items-center justify-center rounded-3xl bg-[#1A1A2E] px-6 py-3 text-sm font-semibold text-white hover:bg-[#E8541E] transition disabled:opacity-50 disabled:cursor-not-allowed">Record sale</button>
           </div>
 
           <div v-else>
             <div class="grid grid-cols-1 gap-4 lg:grid-cols-2 mb-6">
               <div class="rounded-3xl border border-gray-200 bg-slate-50 p-5">
-                <p class="text-sm text-gray-500">Cash revenue</p>
-                <p class="mt-3 text-2xl font-semibold text-[#1A1A2E]">KES {{ totalCashRevenue }}</p>
-              </div>
-              <div class="rounded-3xl border border-gray-200 bg-slate-50 p-5">
-                <p class="text-sm text-gray-500">M-Pesa revenue</p>
-                <p class="mt-3 text-2xl font-semibold text-[#1A1A2E]">KES {{ totalMpesaRevenue }}</p>
-              </div>
+                    <p class="text-sm text-gray-500">Cash revenue</p>
+                    <p class="mt-3 text-2xl font-semibold text-[#1A1A2E]">KES {{ formattedTotalCash }}</p>
+                  </div>
+                  <div class="rounded-3xl border border-gray-200 bg-slate-50 p-5">
+                    <p class="text-sm text-gray-500">M-Pesa revenue</p>
+                    <p class="mt-3 text-2xl font-semibold text-[#1A1A2E]">KES {{ formattedTotalMpesa }}</p>
+                  </div>
             </div>
             <div class="rounded-3xl border border-gray-200 bg-slate-50 p-5">
               <h3 class="text-base font-semibold text-[#1A1A2E]">{{ historyTitle }}</h3>
