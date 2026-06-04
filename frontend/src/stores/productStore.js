@@ -91,6 +91,6 @@ export const useProductStore = defineStore('product', () => {
         // Getters
         productCount, activeProducts, categories, totalCatalogValue,
         // Actions
-        addProduct, updateProduct, toggleActive,deleteProduct
+        addProduct, updateProduct, toggleActive, deleteProduct,
     }
 })
