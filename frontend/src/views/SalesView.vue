@@ -2,61 +2,64 @@
 import { ref, computed } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
 import { useProductStore } from '../stores/productStore'
+import { useSalesStore } from '../stores/salesStore'
 // SAMPLE DATA: Products - this would normally come from an API call to /api/products
 
 const productStore = useProductStore()
+const salesStore = useSalesStore()
 
 // Form State for recording a new sale
 
 const selectedProductId = ref(null)
-const quantity = ref(1) 
+const quantity = ref(1)
 const paymentMethod = ref('cash')
 const mpesaRef = ref('')
 
-// Sales history - this would normally come from an API call to /api/sales=today or similar endpoint
-const sales = ref([])
 // COMPUTED: find the selected product details based on selectedProductId
-
 const selectedProduct = computed(() => {
   return productStore.products.find(p => p.id === selectedProductId.value) || null
 })
 
 // COMPUTED: calculate total price based on selected product and quantity
-const totalAmount = computed(() => { 
+const totalAmount = computed(() => {
   if (!selectedProduct.value) return 0
   return selectedProduct.value.selling_price * quantity.value
 })
 
 // Computed: today's summary stats
-const todayRevenue = computed(() => {
-  return sales.value.reduce((sum, sale) => sum + sale.total_amount, 0)
-})
-
-const salesCount = computed(() => sales.value.length)
+const todayRevenue = computed(() => salesStore.totalRevenue)
+const salesCount = computed(() => salesStore.salesCount)
 
 function recordSale() {
   if (!selectedProduct.value) {
     alert('Please select a product')
     return
   }
-  // In a real app, you would send this data to the backend API to create a new sale record
-  const newSale = {
-    id: sales.value.length + 1,
-    product_id: selectedProduct.value.id,
-    product_name: selectedProduct.value.name,
+
+  salesStore.recordSale({
+    product: selectedProduct.value,
     quantity: quantity.value,
-    total_amount: totalAmount.value,
     payment_method: paymentMethod.value,
-    mpesa_ref: paymentMethod.value === 'mpesa' ? mpesaRef.value : null,
-    timestamp: new Date().toISOString()
-  }
-  sales.value.push(newSale)
-  
+    mpesa_ref: mpesaRef.value
+  })
+
   // Reset form
   selectedProductId.value = null
   quantity.value = 1
   paymentMethod.value = 'cash'
   mpesaRef.value = ''
+}
+
+function handleSale(product) {
+  selectedProductId.value = product.id
+  quantity.value = 1
+  paymentMethod.value = 'cash'
+  mpesaRef.value = ''
+  recordSale()
+}
+
+function handleViewRecipe(productId) {
+  alert(`View recipe for product ${productId}`)
 }
 
 </script>
@@ -171,10 +174,48 @@ function recordSale() {
         </button>
       </div>
 
-      <!-- STUDENTS: Build the sales history panel here (Task 1) -->
       <div class="bg-white rounded-xl p-6 shadow-sm">
         <h2 class="text-lg font-semibold text-[#1A1A2E] mb-4">Today's Sales</h2>
-        <p class="text-gray-400 text-sm">Sales history will appear here. Complete Task 1 to build this.</p>
+
+        <div v-if="salesStore.sales.length === 0" class="text-sm text-gray-500">
+          No sales recorded yet. Use the form to add a new sale.
+        </div>
+
+        <div v-else class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div class="bg-slate-50 rounded-xl p-4">
+              <span class="block text-xs uppercase text-gray-500">Total sales</span>
+              <span class="block text-2xl font-semibold text-[#1A1A2E]">{{ salesCount }}</span>
+            </div>
+            <div class="bg-slate-50 rounded-xl p-4">
+              <span class="block text-xs uppercase text-gray-500">Revenue</span>
+              <span class="block text-2xl font-semibold text-[#E8541E]">KES {{ todayRevenue.toLocaleString() }}</span>
+            </div>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="sale in [...salesStore.sales].reverse()"
+              :key="sale.id"
+              class="border border-gray-200 rounded-2xl p-4 bg-white"
+            >
+              <div class="flex justify-between items-start gap-3">
+                <div>
+                  <p class="text-sm text-gray-500">#{{ sale.id }} • {{ sale.timestamp.slice(11, 16) }}</p>
+                  <p class="font-semibold text-[#1A1A2E]">{{ sale.product_name }}</p>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm text-gray-500">{{ sale.payment_method.toUpperCase() }}</p>
+                  <p class="font-semibold text-[#E8541E]">KES {{ sale.total_amount.toLocaleString() }}</p>
+                </div>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-3 text-sm text-gray-600">
+                <span>Qty: {{ sale.quantity }}</span>
+                <span v-if="sale.mpesa_ref">M-Pesa: {{ sale.mpesa_ref }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
