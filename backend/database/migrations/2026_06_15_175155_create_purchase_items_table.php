@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('purchase_items', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('purchase_order_id')
-          ->constrained()
-          ->onDelete('cascade');
-    $table->foreignId('ingredient_id')
-          ->constrained()
-          ->onDelete('cascade');
-    $table->integer('quantity');
-    $table->decimal('unit_price', 10, 2);
-    $table->timestamps();
-});
-
+        Schema::create('purchase_items', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('purchase_order_id')
+                  ->constrained()
+                  ->onDelete('cascade');
+            $table->foreignId('ingredient_id')
+                  ->constrained()
+                  ->onDelete('cascade');
+            $table->decimal('quantity', 10, 2);      // allows fractional units
+            $table->decimal('unit_price', 10, 2);    // cost per unit
+            $table->decimal('total_price', 10, 2);   // precomputed total
+            $table->timestamps();
+        });
     }
 
     /**
