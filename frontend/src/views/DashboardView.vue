@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import StockIndicator from '../components/StockIndicator.vue'
 import BatchCard from '../components/BatchCard.vue'
 import { useIngredientStore } from '../stores/ingredientStore'
 import { useBatchStore } from '../stores/batchStore'
 import { useProductStore } from '../stores/productStore'
+import api from '../api/axios'
 
 const ingredientStore = useIngredientStore()
 const batchStore = useBatchStore()
@@ -12,6 +13,18 @@ const productStore = useProductStore()
 
 // ✅ FIX: define missing variable safely
 const needsReorder = computed(() => ingredientStore.lowStockCount)
+
+onMounted(async () => {
+  try
+  {
+    const response = await api.get('health')
+    console.log('API health check response:', response.data)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+})
+
+
 </script>
 
 <template>
