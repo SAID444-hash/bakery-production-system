@@ -1,3 +1,4 @@
+<!-- src/views/SalesView.vue -->
 <script setup>
 import { ref, computed } from 'vue'
 import ProductCard from '../components/ProductCard.vue'
