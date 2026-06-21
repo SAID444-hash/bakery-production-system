@@ -55,4 +55,32 @@ class AuthController extends Controller
         return response()->json($request->user());
     }
     
+    public function register(Request $request)
+    {
+        //regex for password validation: at least one uppercase letter, one lowercase letter, one digit, and one special character
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        // Create a token for this user
+        $token = $user->createToken('bakery-app')->plainTextToken;
+
+        return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ],
+            'token' => $token,
+        ], 201);
+    }
 }
