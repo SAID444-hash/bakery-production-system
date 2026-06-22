@@ -1,4 +1,3 @@
-<!-- src/views/Dashboardview.vue -->
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import StockIndicator from '../components/StockIndicator.vue'
