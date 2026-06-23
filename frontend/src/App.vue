@@ -6,7 +6,6 @@ const authStore = useAuthStore()
 
 <template>
   <div class="min-h-screen bg-gray-50">
-    <!-- Navigation bar -->
     <nav class="bg-[#1A1A2E] text-white px-8 py-4 flex justify-between items-center">
       <span class="text-xl font-bold">🍞 Bakery Production System</span>
 
@@ -48,15 +47,13 @@ const authStore = useAuthStore()
       </div>
     </nav>
 
-    <!-- Page content -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+    <main class="max-w-6xl mx-auto px-4 py-8">
       <router-view />
     </main>
   </div>
 </template>
 
 <style>
-/* Active router link styling — needs global CSS since Tailwind can't target dynamic classes easily */
 .router-link-active {
   color: #E8541E !important;
   font-weight: 600;
