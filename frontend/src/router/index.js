@@ -13,46 +13,51 @@ const router = createRouter({
       path: '/products',
       name: 'products',
       component: () => import('../views/ProductsView.vue'),
-      meta: { requiresAuth: true, roles: ['admin', 'baker'] }
+      meta: {
+        requiresAuth: true,
+        roles: ['admin', 'baker']
+      }
     },
     {
       path: '/sales',
       name: 'sales',
       component: () => import('../views/SalesView.vue'),
-      meta: { requiresAuth: true, roles: ['admin', 'cashier'] }
+      meta: {
+        requiresAuth: true,
+        roles: ['admin', 'cashier']
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue'),
-    },
-  ],
+      component: () => import('../views/LoginView.vue')
+    }
+  ]
 })
 
-// NAVIGATION GUARD: checks auth before every page navigation
-router.beforeEach((to, from, next) => {
+// Navigation Guard
+router.beforeEach((to) => {
   const token = localStorage.getItem('auth_token')
   const user = JSON.parse(localStorage.getItem('auth_user') || 'null')
 
-  // If the page requires auth and there's no token → redirect to login
+  // If route requires authentication and user is not logged in
   if (to.meta.requiresAuth && !token) {
-    next({ name: 'login' })
-    return
+    return { name: 'login' }
   }
 
-  // If the page requires specific roles and user doesn't have one
-  if (to.meta.roles && user && !to.meta.roles.includes(user.role)) {
-    next({ name: 'dashboard' })  // Redirect to dashboard instead
-    return
+  // If route requires specific roles
+  if (to.meta.roles) {
+    if (!user || !to.meta.roles.includes(user.role)) {
+      return { name: 'dashboard' }
+    }
   }
 
-  // If logged in and trying to access login page → redirect to dashboard
+  // If already logged in and trying to access login page
   if (to.name === 'login' && token) {
-    next({ name: 'dashboard' })
-    return
+    return { name: 'dashboard' }
   }
 
-  next()
+  return true
 })
 
 export default router
